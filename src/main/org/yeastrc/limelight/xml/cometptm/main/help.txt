@@ -1,0 +1,18 @@
+Description: Convert the results of a Comet-PTM analysis into limelight XML
+             suitable for import into the limelight web application.
+
+Usage: java -jar cometPTM2LimelightXML.jar.jar -c path -p path -f path -o path
+
+Example: java -jar cometPTM2LimelightXML.jar -c /path/to/comet.params
+                                       -o /path/to/output.limelight.xml
+                                       -p /path/to/pepXML.xml
+                                       -f /path/to/fasta.fa
+
+Options:
+	-c	[Required] Path to Comet params file
+	-o	[Required] Path to use for the limelight XML output file
+	-f	[Required] Path to FASTA file used in the experiment.
+	-p	[Required] Path to pepXML file
+	-d  [Optional] Prefix string to use for decoys (retrieved from comet.parms
+	               decoy_prefix parameter by default)
+

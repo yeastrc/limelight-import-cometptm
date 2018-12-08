@@ -30,43 +30,16 @@ public class PSMDefaultVisibleAnnotationTypes {
 	 * Get the default visible annotation types for Magnum data
 	 * @return
 	 */
-	public static List<SearchAnnotation> getDefaultVisibleAnnotationTypes( boolean haveIProphetData ) {
+	public static List<SearchAnnotation> getDefaultVisibleAnnotationTypes() {
 		List<SearchAnnotation> annotations = new ArrayList<SearchAnnotation>();
 
-		if( haveIProphetData ) {
-
-			{
-				SearchAnnotation annotation = new SearchAnnotation();
-				annotation.setAnnotationName(PSMAnnotationTypes.IPROPHET_ANNOTATION_TYPE_FDR);
-				annotation.setSearchProgram(Constants.PROGRAM_NAME_INTERPROPHET);
-				annotations.add(annotation);
-			}
-
-			{
-				SearchAnnotation annotation = new SearchAnnotation();
-				annotation.setAnnotationName(PSMAnnotationTypes.IPROPHET_ANNOTATION_TYPE_SCORE);
-				annotation.setSearchProgram(Constants.PROGRAM_NAME_INTERPROPHET);
-				annotations.add(annotation);
-			}
-
-		} else {
-
-			{
-				SearchAnnotation annotation = new SearchAnnotation();
-				annotation.setAnnotationName(PSMAnnotationTypes.PPROPHET_ANNOTATION_TYPE_FDR);
-				annotation.setSearchProgram(Constants.PROGRAM_NAME_PEPTIDEPROPHET);
-				annotations.add(annotation);
-			}
-
-			{
-				SearchAnnotation annotation = new SearchAnnotation();
-				annotation.setAnnotationName(PSMAnnotationTypes.PPROPHET_ANNOTATION_TYPE_SCORE);
-				annotation.setSearchProgram(Constants.PROGRAM_NAME_PEPTIDEPROPHET);
-				annotations.add(annotation);
-			}
-
+		{
+			SearchAnnotation annotation = new SearchAnnotation();
+			annotation.setAnnotationName(PSMAnnotationTypes.COMET_ANNOTATION_TYPE_FDR);
+			annotation.setSearchProgram(Constants.PROGRAM_NAME_COMET_PTM);
+			annotations.add(annotation);
 		}
-		
+
 		{
 			SearchAnnotation annotation = new SearchAnnotation();
 			annotation.setAnnotationName( PSMAnnotationTypes.COMET_ANNOTATION_TYPE_EVALUE );

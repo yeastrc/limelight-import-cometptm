@@ -22,10 +22,7 @@ import org.yeastrc.limelight.xml.cometptm.builder.XMLBuilder;
 import org.yeastrc.limelight.xml.cometptm.objects.ConversionParameters;
 import org.yeastrc.limelight.xml.cometptm.objects.CometPTMParameters;
 import org.yeastrc.limelight.xml.cometptm.objects.CometResults;
-import org.yeastrc.limelight.xml.cometptm.reader.CometPTMParamsReader;
-import org.yeastrc.limelight.xml.cometptm.reader.TPPErrorAnalysis;
-import org.yeastrc.limelight.xml.cometptm.reader.TPPErrorAnalyzer;
-import org.yeastrc.limelight.xml.cometptm.reader.TPPResultsParser;
+import org.yeastrc.limelight.xml.cometptm.reader.*;
 
 public class ConverterRunner {
 
@@ -40,16 +37,17 @@ public class ConverterRunner {
 		System.err.println( " Done." );
 		
 		System.err.print( "Reading pepXML data into memory..." );
-		CometResults cometResults = TPPResultsParser.getTPPResults( conversionParameters.getPepXMLFile(), cometParams, conversionParameters.getDecoyPrefixOverride() );
+		CometResults cometResults = PepXMLResultsParser.getTPPResults( conversionParameters.getPepXMLFile(), cometParams, conversionParameters.getDecoyPrefixOverride() );
 		System.err.println( " Done." );
 		
 		System.err.print( "Performing FDR analysis of Comet E-values..." );
-		TPPErrorAnalysis ppErrorAnalysis = TPPErrorAnalyzer.performPeptideProphetAnalysis(cometResults, TPPErrorAnalyzer.TYPE_PEPTIDE_PROPHET );
+		TargetDecoyCounts tdCounts = TargetDecoyCountFactory.getTargetDecoyCountsByEvalue( cometResults );
+		TargetDecoyAnalysis tdAnalysis = TargetDecoyAnalysisFactory.createTargetDecoyAnalysis( tdCounts, TargetDecoyAnalysisFactory.LOWER_IS_BETTER );
 		System.err.println( " Done." );
 
 
 		System.err.print( "Writing out XML..." );
-		(new XMLBuilder()).buildAndSaveXML( conversionParameters, cometResults, cometParams, ppErrorAnalysis, ipErrorAnalysis );
+		(new XMLBuilder()).buildAndSaveXML( conversionParameters, cometResults, cometParams, tdAnalysis );
 		System.err.println( " Done." );
 		
 	}

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PSMAnnotationTypeSortOrder {
 
-	public static List<SearchAnnotation> getPSMAnnotationTypeSortOrder( boolean haveIProphetData ) {
+	public static List<SearchAnnotation> getPSMAnnotationTypeSortOrder( ) {
 		List<SearchAnnotation> annotations = new ArrayList<SearchAnnotation>();
 
 		{

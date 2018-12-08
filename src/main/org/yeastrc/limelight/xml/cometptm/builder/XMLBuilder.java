@@ -9,7 +9,7 @@ import org.yeastrc.limelight.xml.cometptm.annotation.PSMAnnotationTypes;
 import org.yeastrc.limelight.xml.cometptm.annotation.PSMDefaultVisibleAnnotationTypes;
 import org.yeastrc.limelight.xml.cometptm.constants.Constants;
 import org.yeastrc.limelight.xml.cometptm.objects.*;
-import org.yeastrc.limelight.xml.cometptm.reader.TPPErrorAnalysis;
+import org.yeastrc.limelight.xml.cometptm.reader.TargetDecoyAnalysis;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -24,8 +24,7 @@ public class XMLBuilder {
 	public void buildAndSaveXML( ConversionParameters conversionParameters,
 			                     CometResults cometResults,
 			                     CometPTMParameters cometTPPParameters,
-			                     TPPErrorAnalysis ppErrorAnalysis,
-			                     TPPErrorAnalysis ipErrorAnalysis )
+			                     TargetDecoyAnalysis targetDecoyAnalysis )
     throws Exception {
 
 		LimelightInput limelightInputRoot = new LimelightInput();
@@ -40,76 +39,6 @@ public class XMLBuilder {
 		
 		SearchPrograms searchPrograms = new SearchPrograms();
 		searchProgramInfo.setSearchPrograms( searchPrograms );
-		
-		if( cometResults.isHasIProphetResults() ) {
-			SearchProgram searchProgram = new SearchProgram();
-			searchPrograms.getSearchProgram().add( searchProgram );
-				
-			searchProgram.setName( Constants.PROGRAM_NAME_INTERPROPHET );
-			searchProgram.setDisplayName( Constants.PROGRAM_NAME_INTERPROPHET );
-			searchProgram.setVersion( cometResults.getTppVersion() );
-			
-			
-			//
-			// Define the annotation types present in peptideprophet data
-			//
-			PsmAnnotationTypes psmAnnotationTypes = new PsmAnnotationTypes();
-			searchProgram.setPsmAnnotationTypes( psmAnnotationTypes );
-			
-			FilterablePsmAnnotationTypes filterablePsmAnnotationTypes = new FilterablePsmAnnotationTypes();
-			psmAnnotationTypes.setFilterablePsmAnnotationTypes( filterablePsmAnnotationTypes );
-			
-			for( FilterablePsmAnnotationType annoType : PSMAnnotationTypes.getFilterablePsmAnnotationTypes( Constants.PROGRAM_NAME_INTERPROPHET ) ) {
-				filterablePsmAnnotationTypes.getFilterablePsmAnnotationType().add( annoType );
-			}
-		}
-		
-		{
-			SearchProgram searchProgram = new SearchProgram();
-			searchPrograms.getSearchProgram().add( searchProgram );
-				
-			searchProgram.setName( Constants.PROGRAM_NAME_PEPTIDEPROPHET );
-			searchProgram.setDisplayName( Constants.PROGRAM_NAME_PEPTIDEPROPHET );
-			searchProgram.setVersion( cometResults.getTppVersion() );
-			
-			
-			//
-			// Define the annotation types present in peptideprophet data
-			//
-			PsmAnnotationTypes psmAnnotationTypes = new PsmAnnotationTypes();
-			searchProgram.setPsmAnnotationTypes( psmAnnotationTypes );
-			
-			FilterablePsmAnnotationTypes filterablePsmAnnotationTypes = new FilterablePsmAnnotationTypes();
-			psmAnnotationTypes.setFilterablePsmAnnotationTypes( filterablePsmAnnotationTypes );
-			
-			for( FilterablePsmAnnotationType annoType : PSMAnnotationTypes.getFilterablePsmAnnotationTypes( Constants.PROGRAM_NAME_PEPTIDEPROPHET ) ) {
-				
-				// disable default filter on ppro FDR if ipro data are available
-				if( annoType.getName().equals( PSMAnnotationTypes.PPROPHET_ANNOTATION_TYPE_FDR ) && cometResults.isHasIProphetResults() ) {
-					annoType.setDefaultFilterValue( null );
-				}
-				
-				filterablePsmAnnotationTypes.getFilterablePsmAnnotationType().add( annoType );
-			}
-
-		}
-
-		{
-			SearchProgram searchProgram = new SearchProgram();
-			searchPrograms.getSearchProgram().add( searchProgram );
-
-			searchProgram.setName( Constants.PROGRAM_NAME_PTMPROPHET );
-			searchProgram.setDisplayName( Constants.PROGRAM_NAME_PTMPROPHET );
-			searchProgram.setVersion( cometResults.getTppVersion() );
-
-
-			//
-			// Define the annotation types present in peptideprophet data
-			//
-			PsmAnnotationTypes psmAnnotationTypes = new PsmAnnotationTypes();
-			searchProgram.setPsmAnnotationTypes( psmAnnotationTypes );
-
-		}
 
 		{
 			SearchProgram searchProgram = new SearchProgram();
@@ -146,7 +75,7 @@ public class XMLBuilder {
 		VisiblePsmAnnotations xmlVisiblePsmAnnotations = new VisiblePsmAnnotations();
 		xmlDefaultVisibleAnnotations.setVisiblePsmAnnotations( xmlVisiblePsmAnnotations );
 
-		for( SearchAnnotation sa : PSMDefaultVisibleAnnotationTypes.getDefaultVisibleAnnotationTypes( cometResults.isHasIProphetResults() ) ) {
+		for( SearchAnnotation sa : PSMDefaultVisibleAnnotationTypes.getDefaultVisibleAnnotationTypes() ) {
 			xmlVisiblePsmAnnotations.getSearchAnnotation().add( sa );
 		}
 		
@@ -159,7 +88,7 @@ public class XMLBuilder {
 		PsmAnnotationSortOrder xmlPsmAnnotationSortOrder = new PsmAnnotationSortOrder();
 		xmlAnnotationSortOrder.setPsmAnnotationSortOrder( xmlPsmAnnotationSortOrder );
 		
-		for( SearchAnnotation xmlSearchAnnotation : PSMAnnotationTypeSortOrder.getPSMAnnotationTypeSortOrder( cometResults.isHasIProphetResults() ) ) {
+		for( SearchAnnotation xmlSearchAnnotation : PSMAnnotationTypeSortOrder.getPSMAnnotationTypeSortOrder() ) {
 			xmlPsmAnnotationSortOrder.getSearchAnnotation().add( xmlSearchAnnotation );
 		}
 		
@@ -240,7 +169,16 @@ public class XMLBuilder {
 				FilterablePsmAnnotations xmlFilterablePsmAnnotations = new FilterablePsmAnnotations();
 				xmlPsm.setFilterablePsmAnnotations( xmlFilterablePsmAnnotations );
 
-				// handle msfragger scores
+				// handle comet PTM scores
+				{
+					FilterablePsmAnnotation xmlFilterablePsmAnnotation = new FilterablePsmAnnotation();
+					xmlFilterablePsmAnnotations.getFilterablePsmAnnotation().add( xmlFilterablePsmAnnotation );
+
+					xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.COMET_ANNOTATION_TYPE_FDR );
+					xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_COMET_PTM );
+					xmlFilterablePsmAnnotation.setValue( BigDecimal.valueOf( targetDecoyAnalysis.getEstimatedFDR( psm.getEvalue() ) ) );
+				}
+
 				{
 					FilterablePsmAnnotation xmlFilterablePsmAnnotation = new FilterablePsmAnnotation();
 					xmlFilterablePsmAnnotations.getFilterablePsmAnnotation().add( xmlFilterablePsmAnnotation );
@@ -304,69 +242,6 @@ public class XMLBuilder {
 					xmlFilterablePsmAnnotation.setValue( psm.getXcorr() );
 				}
 
-
-
-				// handle peptide prophet scores
-				{
-					FilterablePsmAnnotation xmlFilterablePsmAnnotation = new FilterablePsmAnnotation();
-					xmlFilterablePsmAnnotations.getFilterablePsmAnnotation().add( xmlFilterablePsmAnnotation );
-
-					xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.PPROPHET_ANNOTATION_TYPE_SCORE );
-					xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_PEPTIDEPROPHET );
-					xmlFilterablePsmAnnotation.setValue( psm.getPeptideProphetProbability() );
-				}
-				
-				
-				{
-					FilterablePsmAnnotation xmlFilterablePsmAnnotation = new FilterablePsmAnnotation();
-					xmlFilterablePsmAnnotations.getFilterablePsmAnnotation().add( xmlFilterablePsmAnnotation );
-
-					xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.PPROPHET_ANNOTATION_TYPE_FDR );
-					xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_PEPTIDEPROPHET );
-					
-					BigDecimal error = null;
-					if( ppFDRCache.containsKey( psm.getPeptideProphetProbability() ) ) {
-						error = ppFDRCache.get( psm.getPeptideProphetProbability() );
-					} else {
-						error = ppErrorAnalysis.getError( psm.getPeptideProphetProbability() );
-						ppFDRCache.put( psm.getPeptideProphetProbability(), error );
-					}
-					
-					xmlFilterablePsmAnnotation.setValue( error );
-				}
-				
-				// handle interprophet scores
-				if( cometResults.isHasIProphetResults() ) {
-					
-					{
-						FilterablePsmAnnotation xmlFilterablePsmAnnotation = new FilterablePsmAnnotation();
-						xmlFilterablePsmAnnotations.getFilterablePsmAnnotation().add( xmlFilterablePsmAnnotation );
-
-						xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.IPROPHET_ANNOTATION_TYPE_SCORE );
-						xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_INTERPROPHET );
-						xmlFilterablePsmAnnotation.setValue( psm.getInterProphetProbability() );
-					}
-					
-					
-					{
-						FilterablePsmAnnotation xmlFilterablePsmAnnotation = new FilterablePsmAnnotation();
-						xmlFilterablePsmAnnotations.getFilterablePsmAnnotation().add( xmlFilterablePsmAnnotation );
-
-						xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.IPROPHET_ANNOTATION_TYPE_FDR );
-						xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_INTERPROPHET );
-						
-						BigDecimal error = null;
-						if( ipFDRCache.containsKey( psm.getInterProphetProbability() ) ) {
-							error = ipFDRCache.get( psm.getInterProphetProbability() );
-						} else {
-							error = ipErrorAnalysis.getError( psm.getInterProphetProbability() );
-							ipFDRCache.put( psm.getInterProphetProbability(), error );
-						}
-						
-						xmlFilterablePsmAnnotation.setValue( error );
-					}
-					
-				}
 
 				// add in the mods for this psm
 				if( psm.getModifications() != null && psm.getModifications().keySet().size() > 0 ) {

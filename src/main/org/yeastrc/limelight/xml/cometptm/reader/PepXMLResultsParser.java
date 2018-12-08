@@ -40,7 +40,7 @@ import java.util.Map;
  * @date Feb 21, 2018
  *
  */
-public class TPPResultsParser {
+public class PepXMLResultsParser {
 
 	public static CometResults getTPPResults(File pepXMLFile, CometPTMParameters params, String decoyPrefixOverride ) throws Throwable {
 

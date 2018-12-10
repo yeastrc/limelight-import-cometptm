@@ -7,6 +7,7 @@ import java.util.Map;
 public class TargetDecoyCounts {
 
     public void addTarget( BigDecimal score ) {
+
         if( this.targetCounts == null )
             this.targetCounts = new HashMap<>();
 

@@ -28,6 +28,16 @@ public class PSMAnnotationTypes {
 
 			{
 				FilterablePsmAnnotationType type = new FilterablePsmAnnotationType();
+				type.setName( COMET_ANNOTATION_TYPE_FDR );
+				type.setDescription( "FDR calculated from E-value target decoy analysis." );
+				type.setFilterDirection( FilterDirectionType.BELOW );
+				type.setDefaultFilterValue( new BigDecimal( "0.01" ) );
+
+				types.add( type );
+			}
+
+			{
+				FilterablePsmAnnotationType type = new FilterablePsmAnnotationType();
 				type.setName( COMET_ANNOTATION_TYPE_EVALUE );
 				type.setDescription( "Expect value" );
 				type.setFilterDirection( FilterDirectionType.BELOW );

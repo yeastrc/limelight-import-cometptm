@@ -13,9 +13,11 @@ import org.yeastrc.limelight.xml.cometptm.reader.TargetDecoyAnalysis;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,11 +111,7 @@ public class XMLBuilder {
 				smods.getStaticModification().add( xmlSmod );
 			}
 		}
-		
-		// cache of FDRs calculated for specific PSM probabilities
-		Map<BigDecimal, BigDecimal> ppFDRCache = new HashMap<>();
-		Map<BigDecimal, BigDecimal> ipFDRCache = new HashMap<>();
-		
+
 		//
 		// Define the peptide and PSM data
 		//
@@ -176,7 +174,16 @@ public class XMLBuilder {
 
 					xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.COMET_ANNOTATION_TYPE_FDR );
 					xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_COMET_PTM );
-					xmlFilterablePsmAnnotation.setValue( BigDecimal.valueOf( targetDecoyAnalysis.getEstimatedFDR( psm.getEvalue() ) ) );
+
+
+					DecimalFormat formatter = new DecimalFormat("0.###E0");
+
+					double fdr = targetDecoyAnalysis.getFDRForScore( psm.getEvalue() );
+
+					BigDecimal bd = BigDecimal.valueOf( fdr );
+					bd = bd.round( new MathContext( 3 ) );
+
+					xmlFilterablePsmAnnotation.setValue( bd );
 				}
 
 				{

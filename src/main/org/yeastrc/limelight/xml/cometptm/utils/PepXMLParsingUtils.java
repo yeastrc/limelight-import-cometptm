@@ -54,7 +54,7 @@ public class PepXMLParsingUtils {
 	 * @return
 	 */
 	public static boolean searchHitIsDecoy( SearchHit searchHit, String decoyPrefix ) {
-		
+
 		String protein = searchHit.getProtein();
 		if( protein.startsWith( decoyPrefix ) ) {
 			

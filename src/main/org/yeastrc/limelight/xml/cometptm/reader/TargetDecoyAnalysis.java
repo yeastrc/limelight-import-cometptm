@@ -5,36 +5,15 @@ import java.util.Map;
 
 public class TargetDecoyAnalysis {
 
-    private Map<BigDecimal, Integer> totalTargetCountsAtScoreOrBetter;
-    private Map<BigDecimal, Integer> totalDecoyCountsAtScoreOrBetter;
+    private Map<BigDecimal, Double> scoreFDRMap;
 
-
-    protected TargetDecoyAnalysis(Map<BigDecimal, Integer> totalTargetCountsAtScoreOrBetter, Map<BigDecimal, Integer> totalDecoyCountsAtScoreOrBetter) {
-
-        this.totalTargetCountsAtScoreOrBetter = totalTargetCountsAtScoreOrBetter;
-        this.totalDecoyCountsAtScoreOrBetter = totalDecoyCountsAtScoreOrBetter;
-
+    protected TargetDecoyAnalysis( Map<BigDecimal, Double> scoreFDRMap ) {
+        this.scoreFDRMap = scoreFDRMap;
     }
 
-    public Map<BigDecimal, Integer> getTotalTargetCountsAtScoreOrBetter() {
-        return totalTargetCountsAtScoreOrBetter;
+    public Double getFDRForScore( BigDecimal score ) {
+        return this.scoreFDRMap.get( score );
     }
 
-    public Map<BigDecimal, Integer> getTotalDecoyCountsAtScoreOrBetter() {
-        return totalDecoyCountsAtScoreOrBetter;
-    }
 
-    public double getEstimatedFDR(BigDecimal score) throws Exception {
-
-        if (!this.totalDecoyCountsAtScoreOrBetter.containsKey(score) ||
-            !this.totalTargetCountsAtScoreOrBetter.containsKey( score ) ) {
-
-            throw new Exception( "Supplied score was not found in the data used to train this target/decoy analysis." );
-        }
-
-        double decoyCount = this.totalDecoyCountsAtScoreOrBetter.get( score ).doubleValue();
-        double targetCount = this.totalTargetCountsAtScoreOrBetter.get( score ).doubleValue();
-
-        return decoyCount / ( decoyCount + targetCount );
-    }
 }

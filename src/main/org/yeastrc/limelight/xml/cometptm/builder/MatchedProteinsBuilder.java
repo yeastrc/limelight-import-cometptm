@@ -8,6 +8,8 @@ import org.yeastrc.limelight.limelight_import.api.xml_dto.MatchedProtein;
 import org.yeastrc.limelight.limelight_import.api.xml_dto.MatchedProteinLabel;
 import org.yeastrc.limelight.limelight_import.api.xml_dto.MatchedProteins;
 import org.yeastrc.limelight.xml.cometptm.objects.CometReportedPeptide;
+import org.yeastrc.limelight.xml.cometptm.objects.*;
+import org.yeastrc.limelight.xml.cometptm.utils.ReportedPeptideUtils;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -36,18 +38,24 @@ public class MatchedProteinsBuilder {
 	 *
 	 * @param limelightInputRoot
 	 * @param fastaFile
-	 * @param reportedPeptides
+	 * @param cometResults
+	 * @param decoyString
 	 * @throws Exception
 	 */
-	public void buildMatchedProteins( LimelightInput limelightInputRoot, File fastaFile, Collection<CometReportedPeptide> reportedPeptides ) throws Exception {
+	public void buildMatchedProteins( LimelightInput limelightInputRoot, File fastaFile, CometResults cometResults, String decoyString ) throws Exception {
 
 		System.err.print( " Matching peptides to proteins..." );
 
+		Collection<CometReportedPeptide> reportedPeptides = cometResults.getPeptidePSMMap().keySet();
+
 		// process the reported peptides to get naked peptide objects
-		Collection<PeptideObject> nakedPeptideObjects = getNakedPeptideObjectsForReportedPeptides( reportedPeptides );
+		Collection<PeptideObject> nakedPeptideObjects = getNakedPeptideObjectsForReportedPeptides( reportedPeptides, cometResults );
 
 		// find the proteins matched by any of these peptides
 		Map<String, Collection<FastaProteinAnnotation>> proteins = getProteins( nakedPeptideObjects, fastaFile );
+
+		// remove all decoy annotations from proteins
+		proteins = removeDecoyAnnotationsFromProteins( proteins, decoyString );
 
 		// create the XML and add to root element
 		buildAndAddMatchedProteinsToXML( limelightInputRoot, proteins );
@@ -55,11 +63,16 @@ public class MatchedProteinsBuilder {
 	}
 
 
-	private Collection<PeptideObject> getNakedPeptideObjectsForReportedPeptides( Collection<CometReportedPeptide> cometPeptides ) {
+	private Collection<PeptideObject> getNakedPeptideObjectsForReportedPeptides( Collection<CometReportedPeptide> cometPeptides, CometResults cometResults ) {
 
 		Collection<PeptideObject> nakedPeptideObjects = new HashSet<>();
 
 		for( CometReportedPeptide reportedPeptide : cometPeptides ) {
+
+			// skip this if it only contains decoys
+			if(ReportedPeptideUtils.reportedPeptideOnlyContainsDecoys( cometResults, reportedPeptide ) ) {
+				continue;
+			}
 
 			PeptideObject nakedPeptideObject = new PeptideObject();
 			nakedPeptideObject.setFoundMatchingProtein( false );
@@ -73,6 +86,27 @@ public class MatchedProteinsBuilder {
 	}
 
 
+	private Map<String, Collection<FastaProteinAnnotation>> removeDecoyAnnotationsFromProteins( Map<String, Collection<FastaProteinAnnotation>> oldProteins, String decoyString ) {
+
+		Map<String, Collection<FastaProteinAnnotation>> newProteins = new HashMap<>();
+
+		for( String seq : oldProteins.keySet() ) {
+
+			Collection<FastaProteinAnnotation> fastaAnnotations = new HashSet<>();
+
+			for( FastaProteinAnnotation fpa : oldProteins.get( seq ) ) {
+				if( !fpa.getName().startsWith( decoyString ) ) {
+					fastaAnnotations.add( fpa );
+				}
+			}
+
+			if( fastaAnnotations.size() > 0 ) {
+				newProteins.put( seq, fastaAnnotations );
+			}
+		}
+
+		return newProteins;
+	}
 
 
 

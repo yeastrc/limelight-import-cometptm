@@ -2,6 +2,7 @@ package org.yeastrc.limelight.xml.cometptm.utils;
 
 import org.yeastrc.limelight.xml.cometptm.objects.CometPSM;
 import org.yeastrc.limelight.xml.cometptm.objects.CometReportedPeptide;
+import org.yeastrc.limelight.xml.cometptm.objects.CometResults;
 
 public class ReportedPeptideUtils {
 
@@ -14,6 +15,26 @@ public class ReportedPeptideUtils {
 		rp.setReportedPeptideString( ModParsingUtils.getRoundedReportedPeptideString( psm.getPeptideSequence(), psm.getModifications() ));
 
 		return rp;
+	}
+
+	/**
+	 * Return true if the given cometReportedPeptide only contains decoys in the given set of comet results.
+	 *
+	 * @param cometResults
+	 * @param cometReportedPeptide
+	 * @return
+	 */
+	public static boolean reportedPeptideOnlyContainsDecoys( CometResults cometResults, CometReportedPeptide cometReportedPeptide ) {
+
+		for( int scanNumber : cometResults.getPeptidePSMMap().get( cometReportedPeptide ).keySet() ) {
+
+			CometPSM psm = cometResults.getPeptidePSMMap().get( cometReportedPeptide ).get( scanNumber );
+			if( !psm.getDecoy() ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

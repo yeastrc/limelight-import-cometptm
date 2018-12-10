@@ -10,6 +10,8 @@ import org.yeastrc.limelight.xml.cometptm.annotation.PSMDefaultVisibleAnnotation
 import org.yeastrc.limelight.xml.cometptm.constants.Constants;
 import org.yeastrc.limelight.xml.cometptm.objects.*;
 import org.yeastrc.limelight.xml.cometptm.reader.TargetDecoyAnalysis;
+import org.yeastrc.limelight.xml.cometptm.utils.DecoyUtils;
+import org.yeastrc.limelight.xml.cometptm.utils.ReportedPeptideUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,8 +20,7 @@ import java.math.RoundingMode;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class XMLBuilder {
 
@@ -120,7 +121,12 @@ public class XMLBuilder {
 		
 		// iterate over each distinct reported peptide
 		for( CometReportedPeptide cometReportedPeptide : cometResults.getPeptidePSMMap().keySet() ) {
-						
+
+			// skip this reported peptide if it only contains decoys
+			if(ReportedPeptideUtils.reportedPeptideOnlyContainsDecoys( cometResults, cometReportedPeptide ) ) {
+				continue;
+			}
+
 			ReportedPeptide xmlReportedPeptide = new ReportedPeptide();
 			reportedPeptides.getReportedPeptide().add( xmlReportedPeptide );
 			
@@ -156,6 +162,11 @@ public class XMLBuilder {
 			for( int scanNumber : cometResults.getPeptidePSMMap().get(cometReportedPeptide).keySet() ) {
 
 				CometPSM psm = cometResults.getPeptidePSMMap().get(cometReportedPeptide).get( scanNumber );
+
+				// skip this PSM if it's a decoy
+				if( psm.getDecoy() ) {
+					continue;
+				}
 
 				Psm xmlPsm = new Psm();
 				xmlPsms.getPsm().add( xmlPsm );
@@ -277,7 +288,8 @@ public class XMLBuilder {
 		MatchedProteinsBuilder.getInstance().buildMatchedProteins(
 				                                                   limelightInputRoot,
 				                                                   conversionParameters.getFastaFile(),
-				                                                   cometResults.getPeptidePSMMap().keySet()
+																   cometResults,
+																   DecoyUtils.getDecoyPrefixToUse( cometTPPParameters, conversionParameters )
 				                                                  );
 		
 		
@@ -297,6 +309,6 @@ public class XMLBuilder {
 		CreateImportFileFromJavaObjectsMain.getInstance().createImportFileFromJavaObjectsMain( conversionParameters.getLimelightXMLOutputFile(), limelightInputRoot);
 		
 	}
-	
+
 	
 }

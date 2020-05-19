@@ -4,6 +4,9 @@ import org.yeastrc.limelight.xml.cometptm.objects.CometPSM;
 import org.yeastrc.limelight.xml.cometptm.objects.CometReportedPeptide;
 import org.yeastrc.limelight.xml.cometptm.objects.CometResults;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class ReportedPeptideUtils {
 
 	public static CometReportedPeptide getCometReportedPeptideForCometPSM(CometPSM psm ) throws Exception {
@@ -12,8 +15,8 @@ public class ReportedPeptideUtils {
 		
 		rp.setNakedPeptide( psm.getPeptideSequence() );
 		rp.setMods( psm.getModifications() );
-		rp.setReportedPeptideString( ModParsingUtils.getRoundedReportedPeptideString( psm.getPeptideSequence(), psm.getModifications() ));
-
+		rp.setOpenModMass(psm.getMassDiff().setScale(0, RoundingMode.HALF_UP));
+		rp.setReportedPeptideString( ModParsingUtils.getRoundedReportedPeptideString( psm.getPeptideSequence(), psm.getModifications(), psm.getMassDiff() ));
 		return rp;
 	}
 

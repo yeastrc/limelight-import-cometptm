@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ModParsingUtils {
 
-	public static String getRoundedReportedPeptideString( String nakedPeptideSequence, Map<Integer, BigDecimal> modMap ) {
+	public static String getRoundedReportedPeptideString( String nakedPeptideSequence, Map<Integer, BigDecimal> modMap, BigDecimal openModMass ) {
 				
 		if( modMap == null || modMap.size() < 1 )
 			return nakedPeptideSequence;
@@ -27,6 +27,13 @@ public class ModParsingUtils {
 		    	
 		    }
 		}
+
+		sb.append("{");
+		if(openModMass.compareTo(new BigDecimal("0")) >= 0) {
+			sb.append("+");
+		}
+		sb.append(openModMass.setScale(0, RoundingMode.HALF_UP));
+		sb.append("}");
 				
 		return sb.toString();
 	}

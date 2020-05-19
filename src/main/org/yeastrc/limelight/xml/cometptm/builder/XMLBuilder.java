@@ -152,6 +152,10 @@ public class XMLBuilder {
 				}
 			}
 
+			// add in open mod mass
+			PeptideOpenModification xmlPeptideOpenMod = new PeptideOpenModification();
+			xmlPeptideOpenMod.setMass(cometReportedPeptide.getOpenModMass());
+			xmlReportedPeptide.setPeptideOpenModification(xmlPeptideOpenMod);
 			
 			// add in the PSMs and annotations
 			Psms xmlPsms = new Psms();
@@ -274,6 +278,13 @@ public class XMLBuilder {
 						xmlPSMModification.setMass( psm.getModifications().get( position ) );
 						xmlPSMModification.setPosition( new BigInteger( String.valueOf( position ) ) );
 					}
+				}
+
+				// add in open mod for this PSM
+				{
+					PsmOpenModification xmlPsmOpenMod = new PsmOpenModification();
+					xmlPsmOpenMod.setMass(psm.getMassDiff());
+					xmlPsm.setPsmOpenModification(xmlPsmOpenMod);
 				}
 				
 				

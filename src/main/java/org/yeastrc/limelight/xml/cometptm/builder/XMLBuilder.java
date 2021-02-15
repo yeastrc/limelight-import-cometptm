@@ -11,6 +11,7 @@ import org.yeastrc.limelight.xml.cometptm.constants.Constants;
 import org.yeastrc.limelight.xml.cometptm.objects.*;
 import org.yeastrc.limelight.xml.cometptm.reader.TargetDecoyAnalysis;
 import org.yeastrc.limelight.xml.cometptm.utils.DecoyUtils;
+import org.yeastrc.limelight.xml.cometptm.utils.MassUtils;
 import org.yeastrc.limelight.xml.cometptm.utils.ReportedPeptideUtils;
 
 import java.math.BigDecimal;
@@ -172,6 +173,8 @@ public class XMLBuilder {
 
 				xmlPsm.setScanNumber( new BigInteger( String.valueOf( scanNumber ) ) );
 				xmlPsm.setPrecursorCharge( new BigInteger( String.valueOf( psm.getCharge() ) ) );
+				xmlPsm.setPrecursorMZ(MassUtils.getObservedMoverZForPsm(psm));
+				xmlPsm.setPrecursorRetentionTime(psm.getRetentionTime());
 
 				// add in the filterable PSM annotations (e.g., score)
 				FilterablePsmAnnotations xmlFilterablePsmAnnotations = new FilterablePsmAnnotations();

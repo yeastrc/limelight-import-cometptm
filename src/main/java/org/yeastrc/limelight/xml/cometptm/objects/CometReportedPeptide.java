@@ -38,8 +38,7 @@ public class CometReportedPeptide {
 	private String reportedPeptideString;
 	private String nakedPeptide;
 	private Map<Integer, BigDecimal> mods;
-	private BigDecimal openModMass;
-	
+
 	/**
 	 * @return the reportedPeptideString
 	 */
@@ -77,11 +76,4 @@ public class CometReportedPeptide {
 		this.mods = mods;
 	}
 
-	public BigDecimal getOpenModMass() {
-		return openModMass;
-	}
-
-	public void setOpenModMass(BigDecimal openModMass) {
-		this.openModMass = openModMass;
-	}
 }

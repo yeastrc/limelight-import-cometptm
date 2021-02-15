@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public class PepXMLResultsParser {
 
-	public static CometResults getTPPResults(File pepXMLFile, CometPTMParameters params, String decoyPrefixOverride ) throws Throwable {
+	public static CometResults getTPPResults(File pepXMLFile, CometPTMParameters params ) throws Throwable {
 
 		Map<CometReportedPeptide,Map<Integer, CometPSM>> resultMap = new HashMap<>();
 				
@@ -54,15 +54,8 @@ public class PepXMLResultsParser {
 			throw t;
 		}
 
-		String decoyPrefix = decoyPrefixOverride;
-		if( decoyPrefix == null || decoyPrefix.length() < 1 ) {
-			decoyPrefix = params.getDecoyPrefix();
-		}
-		if( decoyPrefix == null || decoyPrefix.length() < 1 ) {
-			throw new Exception( "Could not determine a decoy prefix. It could not be found in the comet.params and none was supplied on command line." );
-		}
+		String decoyPrefix = params.getDecoyPrefix();
 
-		
 		CometResults results = new CometResults();
 		results.setPeptidePSMMap( resultMap );
 		

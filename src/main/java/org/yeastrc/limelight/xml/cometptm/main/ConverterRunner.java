@@ -33,11 +33,11 @@ public class ConverterRunner {
 	public void convertCometPTMTPPToLimelightXML(ConversionParameters conversionParameters ) throws Throwable {
 	
 		System.err.print( "Reading conf file into memory..." );
-		CometPTMParameters cometParams = CometPTMParamsReader.getMSFraggerParameters( conversionParameters.getFonfFile() );
+		CometPTMParameters cometParams = CometPTMParamsReader.getMSFraggerParameters( conversionParameters.getConfFile() );
 		System.err.println( " Done." );
 		
 		System.err.print( "Reading pepXML data into memory..." );
-		CometResults cometResults = PepXMLResultsParser.getTPPResults( conversionParameters.getPepXMLFile(), cometParams, conversionParameters.getDecoyPrefixOverride() );
+		CometResults cometResults = PepXMLResultsParser.getTPPResults( conversionParameters.getPepXMLFile(), cometParams );
 		System.err.println( " Done." );
 		
 		System.err.print( "Performing FDR analysis of Comet E-values..." );

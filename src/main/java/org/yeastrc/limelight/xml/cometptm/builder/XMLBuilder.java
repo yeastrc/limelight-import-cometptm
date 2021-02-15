@@ -152,11 +152,6 @@ public class XMLBuilder {
 				}
 			}
 
-			// add in open mod mass
-			PeptideOpenModification xmlPeptideOpenMod = new PeptideOpenModification();
-			xmlPeptideOpenMod.setMass(cometReportedPeptide.getOpenModMass());
-			xmlReportedPeptide.setPeptideOpenModification(xmlPeptideOpenMod);
-			
 			// add in the PSMs and annotations
 			Psms xmlPsms = new Psms();
 			xmlReportedPeptide.setPsms( xmlPsms );
@@ -189,9 +184,6 @@ public class XMLBuilder {
 
 					xmlFilterablePsmAnnotation.setAnnotationName( PSMAnnotationTypes.COMET_ANNOTATION_TYPE_FDR );
 					xmlFilterablePsmAnnotation.setSearchProgram( Constants.PROGRAM_NAME_COMET_PTM );
-
-
-					DecimalFormat formatter = new DecimalFormat("0.###E0");
 
 					double fdr = targetDecoyAnalysis.getFDRForScore( psm.getEvalue() );
 
@@ -312,8 +304,8 @@ public class XMLBuilder {
 		xmlConfigurationFiles.getConfigurationFile().add( xmlConfigurationFile );
 		
 		xmlConfigurationFile.setSearchProgram( Constants.PROGRAM_NAME_COMET_PTM );
-		xmlConfigurationFile.setFileName( conversionParameters.getFonfFile().getName() );
-		xmlConfigurationFile.setFileContent( Files.readAllBytes( FileSystems.getDefault().getPath( conversionParameters.getFonfFile().getAbsolutePath() ) ) );
+		xmlConfigurationFile.setFileName( conversionParameters.getConfFile().getName() );
+		xmlConfigurationFile.setFileContent( Files.readAllBytes( FileSystems.getDefault().getPath( conversionParameters.getConfFile().getAbsolutePath() ) ) );
 		
 		
 		//make the xml file

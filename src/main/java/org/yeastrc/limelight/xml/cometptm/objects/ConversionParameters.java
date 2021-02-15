@@ -37,14 +37,14 @@ public class ConversionParameters {
 	/**
 	 * @return the fonfFile
 	 */
-	public File getFonfFile() {
-		return fonfFile;
+	public File getConfFile() {
+		return confFile;
 	}
 	/**
-	 * @param fonfFile the fonfFile to set
+	 * @param confFile the fonfFile to set
 	 */
-	public void setFonfFile(File fonfFile) {
-		this.fonfFile = fonfFile;
+	public void setConfFile(File confFile) {
+		this.confFile = confFile;
 	}
 	/**
 	 * @return the limelightXMLOutputFile
@@ -83,19 +83,10 @@ public class ConversionParameters {
 		this.conversionProgramInfo = conversionProgramInfo;
 	}
 
-	public String getDecoyPrefixOverride() {
-		return decoyPrefixOverride;
-	}
-
-	public void setDecoyPrefixOverride(String decoyPrefixOverride) {
-		this.decoyPrefixOverride = decoyPrefixOverride;
-	}
-
 	private File fastaFile;
-	private File fonfFile;
+	private File confFile;
 	private File limelightXMLOutputFile;
 	private File pepXMLFile;
 	private ConversionProgramInfo conversionProgramInfo;
-	private String decoyPrefixOverride;
-	
+
 }

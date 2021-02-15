@@ -15,7 +15,6 @@ public class ReportedPeptideUtils {
 		
 		rp.setNakedPeptide( psm.getPeptideSequence() );
 		rp.setMods( psm.getModifications() );
-		rp.setOpenModMass(psm.getMassDiff().setScale(0, RoundingMode.HALF_UP));
 		rp.setReportedPeptideString( ModParsingUtils.getRoundedReportedPeptideString( psm.getPeptideSequence(), psm.getModifications(), psm.getMassDiff() ));
 		return rp;
 	}
